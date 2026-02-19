@@ -197,15 +197,16 @@ function extractAuthCode(responseBody: string): string | undefined {
     const parsed = JSON.parse(trimmed) as { code?: string; authorization_code?: string }
     return parsed.code || parsed.authorization_code
   } catch {
-    return trimmed
+    return undefined
   }
 }
 
-async function waitForBridgeAuthCode(pollUrl: string, pollIntervalMs: number): Promise<string> {
+async function waitForBridgeAuthCode(pollUrl: string, pollIntervalMs: number, timeoutMs: number): Promise<string> {
   log(`Waiting for bridge auth code from: ${pollUrl}`)
 
+  const startTime = Date.now()
   let attempts = 0
-  while (true) {
+  while (Date.now() - startTime < timeoutMs) {
     attempts++
     try {
       const response = await fetch(pollUrl, {
@@ -232,6 +233,9 @@ async function waitForBridgeAuthCode(pollUrl: string, pollIntervalMs: number): P
         debugLog('Unexpected auth bridge response status', { attempts, status: response.status })
       }
     } catch (error) {
+      if (error instanceof Error && error.message === 'Auth bridge session expired') {
+        throw error
+      }
       debugLog('Error polling auth bridge for auth code', {
         attempts,
         error: error instanceof Error ? error.message : String(error),
@@ -240,6 +244,8 @@ async function waitForBridgeAuthCode(pollUrl: string, pollIntervalMs: number): P
 
     await new Promise((resolve) => setTimeout(resolve, pollIntervalMs))
   }
+
+  throw new Error(`Timed out waiting for auth code from bridge after ${Math.floor(timeoutMs / 1000)} seconds.`)
 }
 
 function coordinateBridgeAuth(serverUrlHash: string, options: AuthCoordinatorOptions): AuthCoordinatorState {
@@ -255,10 +261,11 @@ function coordinateBridgeAuth(serverUrlHash: string, options: AuthCoordinatorOpt
     authSessionId,
     pollUrl,
     pollIntervalMs,
+    authTimeoutMs: options.authTimeoutMs,
   })
 
   return {
-    waitForAuthCode: () => waitForBridgeAuthCode(pollUrl, pollIntervalMs),
+    waitForAuthCode: () => waitForBridgeAuthCode(pollUrl, pollIntervalMs, options.authTimeoutMs),
     skipBrowserAuth: false,
   }
 }
