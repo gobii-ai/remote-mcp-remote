@@ -1,5 +1,5 @@
 {
-  "name": "mcp-remote",
+  "name": "@gobii-ai/remote-mcp-remote",
   "version": "0.1.38",
   "description": "Remote proxy for Model Context Protocol, allowing local-only clients to connect to remote servers using oAuth",
   "keywords": [
@@ -39,14 +39,14 @@
   },
   "devDependencies": {
     "@modelcontextprotocol/sdk": "^1.25.3",
-    "zod": "^4.0.0",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.10",
     "prettier": "^3.5.3",
     "tsup": "^8.4.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
-    "vitest": "^3.2.3"
+    "vitest": "^3.2.3",
+    "zod": "^4.0.0"
   },
   "tsup": {
     "entry": [
