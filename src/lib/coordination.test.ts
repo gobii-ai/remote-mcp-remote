@@ -78,4 +78,15 @@ describe('bridge auth coordination', () => {
     await expect(authState.waitForAuthCode()).rejects.toThrow('Auth bridge session expired')
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
+
+  it('skips bridge polling in emit-only mode', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(mockResponse(202))
+    vi.stubGlobal('fetch', fetchMock)
+
+    const coordinator = buildBridgeCoordinator({ authBridgeExitAfterAuthorizeUrl: true })
+    const authState = await coordinator.initializeAuth()
+
+    await expect(authState.waitForAuthCode()).rejects.toThrow('Bridge auth emit-only mode')
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
 })

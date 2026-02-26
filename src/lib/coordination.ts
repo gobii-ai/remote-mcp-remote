@@ -14,6 +14,7 @@ export interface AuthCoordinatorOptions {
   authBridgePollUrl?: string
   authBridgePollIntervalMs?: number
   authSessionId?: string
+  authBridgeExitAfterAuthorizeUrl?: boolean
 }
 
 export type AuthCoordinatorState = {
@@ -262,7 +263,18 @@ function coordinateBridgeAuth(serverUrlHash: string, options: AuthCoordinatorOpt
     pollUrl,
     pollIntervalMs,
     authTimeoutMs: options.authTimeoutMs,
+    authBridgeExitAfterAuthorizeUrl: options.authBridgeExitAfterAuthorizeUrl,
   })
+
+  if (options.authBridgeExitAfterAuthorizeUrl) {
+    log('Bridge auth emit-only mode enabled, skipping auth code polling.')
+    return {
+      waitForAuthCode: async () => {
+        throw new Error('Bridge auth emit-only mode: authorization URL emitted.')
+      },
+      skipBrowserAuth: false,
+    }
+  }
 
   return {
     waitForAuthCode: () => waitForBridgeAuthCode(pollUrl, pollIntervalMs, options.authTimeoutMs),

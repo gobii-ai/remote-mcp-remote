@@ -866,6 +866,11 @@ export async function parseCommandLineArgs(args: string[], usage: string) {
     log(`Using provided auth session ID: ${authSessionId}`)
   }
 
+  const authBridgeExitAfterAuthorizeUrl = args.includes('--auth-bridge-exit-after-authorize-url')
+  if (authBridgeExitAfterAuthorizeUrl) {
+    log('Bridge auth emit-only mode enabled')
+  }
+
   let staticOAuthClientMetadata: StaticOAuthClientMetadata = null
   const staticOAuthClientMetadataIndex = args.indexOf('--static-oauth-client-metadata')
   if (staticOAuthClientMetadataIndex !== -1 && staticOAuthClientMetadataIndex < args.length - 1) {
@@ -1034,6 +1039,7 @@ export async function parseCommandLineArgs(args: string[], usage: string) {
     authBridgeNotifyUrl,
     authBridgePollIntervalMs,
     authSessionId,
+    authBridgeExitAfterAuthorizeUrl,
     debug,
     staticOAuthClientMetadata,
     staticOAuthClientInfo,

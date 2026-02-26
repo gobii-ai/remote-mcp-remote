@@ -40,6 +40,7 @@ async function runProxy(
   authBridgeNotifyUrl: string | undefined,
   authBridgePollIntervalMs: number,
   authSessionId: string,
+  authBridgeExitAfterAuthorizeUrl: boolean,
   staticOAuthClientMetadata: StaticOAuthClientMetadata,
   staticOAuthClientInfo: StaticOAuthClientInformationFull,
   authorizeResource: string,
@@ -58,6 +59,7 @@ async function runProxy(
     authBridgePollUrl,
     authBridgePollIntervalMs,
     authSessionId,
+    authBridgeExitAfterAuthorizeUrl,
   })
 
   // Discover OAuth server info via Protected Resource Metadata (RFC 9728)
@@ -196,6 +198,7 @@ parseCommandLineArgs(process.argv.slice(2), 'Usage: npx tsx proxy.ts <https://se
       authBridgeNotifyUrl,
       authBridgePollIntervalMs,
       authSessionId,
+      authBridgeExitAfterAuthorizeUrl,
       debug,
       staticOAuthClientMetadata,
       staticOAuthClientInfo,
@@ -216,6 +219,7 @@ parseCommandLineArgs(process.argv.slice(2), 'Usage: npx tsx proxy.ts <https://se
         authBridgeNotifyUrl,
         authBridgePollIntervalMs,
         authSessionId,
+        authBridgeExitAfterAuthorizeUrl,
         staticOAuthClientMetadata,
         staticOAuthClientInfo,
         authorizeResource,

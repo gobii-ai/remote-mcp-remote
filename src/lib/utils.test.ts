@@ -470,6 +470,16 @@ describe('Feature: Command Line Arguments Parsing', () => {
     expect(result.authBridgePollIntervalMs).toBe(3000)
     expect(result.authSessionId).toBe('session-123')
   })
+
+  it('Scenario: Parse bridge emit-only mode flag', async () => {
+    const args = ['https://example.com/sse', '--auth-mode', 'bridge', '--auth-bridge-poll-url', 'https://api.example.com/poll', '--auth-bridge-exit-after-authorize-url']
+    const usage = 'test usage'
+
+    const result = await parseCommandLineArgs(args, usage)
+
+    expect(result.authMode).toBe('bridge')
+    expect(result.authBridgeExitAfterAuthorizeUrl).toBe(true)
+  })
 })
 
 describe('Feature: Tool Filtering with Ignore Patterns', () => {
